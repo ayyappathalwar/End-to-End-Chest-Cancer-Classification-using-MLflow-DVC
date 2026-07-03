@@ -57,15 +57,12 @@ def save_json(path:Path, data: dict):
 
     Args:
         path(Path): path to json file
-
-    Returns:
-        configBox: data as class attributes instead of dict
+        data(dict): data to be saved in json file
     """
-    with open(path) as f:
-        content = json.load(f)
+    with open(path, "w") as f:
+        json.dump(data, f, indent=4)
 
-    logger.info(f"json file loaded successfully from: {path}")
-    return ConfigBox(content)
+    logger.info(f"json file saved at: {path}")
 
 
 @ensure_annotations
