@@ -4,6 +4,30 @@ Running record of mistakes/errors hit while working on this project and how they
 
 ---
 
+## `MlflowException` 404 recurring via `dvc repro` after `main.py` fix
+
+**Date:** 2026-07-03
+**Where:** `src/cnnClassifier/components/mode_evaluation_mlflow.py`, `log_into_mlflow()`, invoked via `dvc.yaml`'s `evaluation` stage
+
+**Mistake / cause:**
+Earlier we added `load_dotenv(override=True)` to `main.py` to guarantee `.env` always wins over stray shell-exported `MLFLOW_TRACKING_URI` values. But `dvc.yaml`'s `evaluation` stage calls `python src/cnnClassifier/pipeline/stage_04_model_evaluation.py` directly — it never goes through `main.py`, so that fix never took effect for `dvc repro`. Additionally, `log_into_mlflow()` only ever called `mlflow.set_registry_uri(self.config.mlflow_uri)`, never `mlflow.set_tracking_uri(...)` — the tracking URI (used by `start_run`/`create_run`) was left entirely dependent on the `MLFLOW_TRACKING_URI` env var, which still lacked the `.mlflow` suffix in the ambient shell.
+
+**Remedy:**
+Fixed at the source (`mode_evaluation_mlflow.py`) instead of the entry-point scripts, so it works no matter what invokes it:
+```python
+from dotenv import load_dotenv
+load_dotenv(override=True)
+...
+def log_into_mlflow(self):
+    mlflow.set_tracking_uri(self.config.mlflow_uri)
+    mlflow.set_registry_uri(self.config.mlflow_uri)
+    ...
+```
+
+**Lesson:** when a pipeline has multiple entry points (`main.py`, `dvc.yaml` per-stage `cmd:`, notebooks), don't put environment-loading logic only in one entry point — put it in the component/module that actually needs it, or every other entry point will silently skip it.
+
+---
+
 ## `MlflowException` 404 at `/api/2.0/mlflow/runs/create` when running `python main.py`
 
 **Date:** 2026-07-02
