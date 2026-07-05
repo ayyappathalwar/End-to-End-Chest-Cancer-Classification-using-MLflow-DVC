@@ -1,0 +1,11 @@
+tensorflow==2.13.0
+numpy==1.24.3
+python-box==6.0.2
+pyYAML
+ensure==1.0.2
+joblib
+Pillow
+Flask
+Flask-Cors
+python-dotenv
+-e .

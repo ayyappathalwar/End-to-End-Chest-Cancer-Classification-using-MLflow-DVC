@@ -1,0 +1,4 @@
+[core]
+    remote = origin
+['remote "origin"']
+    url = https://dagshub.com/ayyappathalwar/End-to-End-Chest-Cancer-Classification-using-MLflow-DVC.dvc
