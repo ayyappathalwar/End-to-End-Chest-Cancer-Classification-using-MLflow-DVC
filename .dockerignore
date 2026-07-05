@@ -1,0 +1,12 @@
+.env
+.git
+.github
+.vscode
+.dvc
+__pycache__
+*.pyc
+logs
+reseacrh
+*.ipynb
+TROUBLESHOOTING.md
+PROJECT_DOCUMENTATION.md

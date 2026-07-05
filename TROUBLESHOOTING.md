@@ -4,6 +4,27 @@ Running record of mistakes/errors hit while working on this project and how they
 
 ---
 
+## `AttributeError: 'PredictionPipeline' object has no attribute 'predict'`
+
+**Date:** 2026-07-04
+**Where:** `app.py` `/predict` route → `src/cnnClassifier/pipeline/prediction.py`
+
+**Mistake / cause:**
+Two bugs in `PredictionPipeline`:
+1. The method was misspelled `predcit` instead of `predict`, so `app.py`'s call to `clApp.classifier.predict()` failed outright.
+2. It loaded the model from `artifacts/model/model.h5`, but the actual trained model (per `config/config.yaml`'s `trained_model_path`) is saved at `artifacts/training/model.h5` — wrong directory.
+
+**Remedy:**
+```python
+def predict(self):
+    model = load_model(os.path.join("artifacts", "training", "model.h5"))
+    ...
+```
+
+**Note (also fixed separately):** locally, `app.py`'s hardcoded `port=8080` failed with a Windows socket permission error because port 8080 was already bound by the `IP Helper` (`iphlpsvc`) system service. Made the port configurable via `PORT` env var (defaults to 8080, use `PORT=5000 python app.py` locally).
+
+---
+
 ## `MlflowException` 404 recurring via `dvc repro` after `main.py` fix
 
 **Date:** 2026-07-03
