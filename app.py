@@ -50,6 +50,7 @@ def prediction():
 
 if __name__ == "__main__":
     clApp = ClientApp()
-    app.run(host='0.0.0.0', port=8080) # PORT=8080 for AWS
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port) # PORT=8080 for AWS
 
     
